@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Songs Guy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,400;1,9..144,200&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #f5f0e8;
+    --warm: #e8dcc8;
+    --tan: #c9b89a;
+    --brown: #7a6550;
+    --dark: #2a2018;
+    --ink: #1a1208;
+    --accent: #c4703a;
+    --accent2: #8fa87a;
+    --muted: #9a8c7a;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* Grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 2.5rem;
+    background: rgba(245, 240, 232, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--warm);
+  }
+
+  .nav-logo {
+    font-family: 'Fraunces', serif;
+    font-size: 1.1rem;
+    font-weight: 200;
+    letter-spacing: 0.15em;
+    color: var(--brown);
+    text-transform: uppercase;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--accent); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 7rem 0 4rem;
+    gap: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    right: -120px; top: 50%;
+    transform: translateY(-50%);
+    width: 700px; height: 700px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(196,112,58,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-text {
+    padding: 0 4rem 0 6rem;
+    animation: fadeUp 1s ease both;
+  }
+
+  .hero-tag {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.2rem;
+    display: block;
+  }
+
+  .hero-name {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(3.5rem, 7vw, 6.5rem);
+    font-weight: 200;
+    line-height: 1.0;
+    color: var(--ink);
+    margin-bottom: 0.3rem;
+  }
+
+  .hero-name em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .hero-sub {
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 2.5rem;
+    margin-top: 0.8rem;
+  }
+
+  .hero-desc {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82rem;
+    color: var(--brown);
+    line-height: 1.8;
+    margin-bottom: 3rem;
+    max-width: 380px;
+    font-weight: 300;
+  }
+
+  .cta-group {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.6rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: all 0.22s;
+    cursor: pointer;
+    border: none;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+  }
+  .btn-primary:hover { background: #b05e2e; transform: translateY(-1px); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--brown);
+    border: 1px solid var(--tan);
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Hero visual */
+  .hero-visual {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    animation: fadeIn 1.4s ease both;
+    position: relative;
+  }
+
+  .vinyl-wrap {
+    position: relative;
+    width: 340px; height: 340px;
+    animation: spin 18s linear infinite;
+    transform-origin: center;
+  }
+
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+  .vinyl {
+    width: 100%; height: 100%;
+  }
+
+  .hero-visual .pause-hint {
+    position: absolute;
+    bottom: -2rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+    opacity: 0.6;
+  }
+
+  .vinyl-wrap:hover { animation-play-state: paused; }
+
+  /* ── SONGS ── */
+  .section {
+    padding: 6rem 6rem;
+    position: relative;
+  }
+
+  .section-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.7rem;
+  }
+
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 200;
+    color: var(--ink);
+    margin-bottom: 3rem;
+    line-height: 1.1;
+  }
+
+  .section-title em {
+    font-style: italic;
+    color: var(--brown);
+  }
+
+  /* Songs list */
+  .songs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-top: 1px solid var(--warm);
+  }
+
+  .song-item {
+    display: grid;
+    grid-template-columns: 2.2rem 1fr 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 0.5rem;
+    border-bottom: 1px solid var(--warm);
+    transition: background 0.15s;
+    cursor: default;
+  }
+
+  .song-item:hover { background: rgba(196,112,58,0.04); }
+  .song-item.playing { background: rgba(196,112,58,0.07); }
+
+  .play-btn {
+    width: 2rem; height: 2rem;
+    border-radius: 50%;
+    border: 1px solid var(--tan);
+    background: transparent;
+    color: var(--brown);
+    font-size: 0.6rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.18s;
+    flex-shrink: 0;
+    padding-left: 2px;
+  }
+
+  .play-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
+  .song-item.playing .play-btn { background: var(--accent); color: white; border-color: var(--accent); padding-left: 0; }
+
+  .song-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+  }
+
+  .song-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1rem;
+    font-weight: 200;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .song-meta {
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .song-progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+  }
+
+  .song-progress-bar {
+    flex: 1;
+    height: 2px;
+    background: var(--warm);
+    border-radius: 2px;
+    overflow: hidden;
+    cursor: pointer;
+    min-width: 80px;
+  }
+
+  .song-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.1s linear;
+  }
+
+  .song-time {
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    min-width: 2.5rem;
+    text-align: right;
+  }
+
+  .song-num {
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-align: right;
+    min-width: 1.5rem;
+  }
+
+  @media (max-width: 700px) {
+    .song-item { grid-template-columns: 2rem 1fr auto; }
+    .song-progress-wrap { display: none; }
+    .song-num { display: none; }
+  }
+
+  /* albums */
+  .albums-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 2rem;
+  }
+
+  .album-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .album-art {
+    aspect-ratio: 1;
+    background: var(--warm);
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .album-art svg {
+    width: 60%;
+    opacity: 0.25;
+  }
+
+  .album-card-title {
+    font-family: 'Fraunces', serif;
+    font-size: 0.95rem;
+    font-weight: 200;
+    color: var(--ink);
+  }
+
+  .album-card-year {
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  /* ── LISTEN ── */
+  .listen-section {
+    background: var(--dark);
+    color: var(--cream);
+    padding: 6rem;
+  }
+
+  .listen-section .section-label { color: var(--tan); }
+  .listen-section .section-title { color: var(--cream); }
+  .listen-section .section-title em { color: var(--tan); }
+
+  .platforms {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+  }
+
+  .platform-card {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1.5rem;
+    border: 1px solid rgba(201,184,154,0.2);
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.22s;
+    background: rgba(255,255,255,0.03);
+  }
+
+  .platform-card:hover {
+    border-color: var(--tan);
+    background: rgba(201,184,154,0.07);
+    transform: translateY(-2px);
+  }
+
+  .platform-icon {
+    width: 42px; height: 42px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .platform-icon.apple { background: linear-gradient(135deg, #fc5c7d, #6a3093); }
+  .platform-icon.spotify { background: #1DB954; }
+  .platform-icon.yt { background: #FF0000; }
+
+  .yt-card { cursor: default; }
+  .yt-btn-wrap { flex-shrink: 0; display: flex; align-items: center; }
+  .yt-btn-wrap iframe { border-radius: 3px; overflow: hidden; }
+
+  .platform-icon svg { width: 22px; height: 22px; fill: white; }
+
+  .platform-info { flex: 1; }
+
+  .platform-name {
+    font-family: 'Fraunces', serif;
+    font-size: 1rem;
+    font-weight: 200;
+    color: var(--cream);
+    margin-bottom: 0.2rem;
+  }
+
+  .platform-sub {
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .platform-arrow {
+    color: var(--muted);
+    font-size: 1rem;
+    transition: transform 0.2s, color 0.2s;
+  }
+
+  .platform-card:hover .platform-arrow { transform: translateX(3px); color: var(--tan); }
+
+  /* ── ABOUT ── */
+  .about-section {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 5rem;
+    align-items: center;
+    padding: 6rem;
+    background: var(--warm);
+  }
+
+  .about-decor {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .about-circle {
+    width: 220px; height: 220px;
+    border-radius: 50%;
+    border: 1px solid var(--tan);
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+
+  .about-circle::before {
+    content: '';
+    position: absolute;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    border: 1px solid rgba(122,101,80,0.3);
+  }
+
+  .about-circle-inner {
+    font-family: 'Fraunces', serif;
+    font-size: 2.8rem;
+    font-weight: 200;
+    color: var(--brown);
+    text-align: center;
+    line-height: 1.1;
+  }
+
+  .about-text p {
+    font-size: 0.82rem;
+    line-height: 1.9;
+    color: var(--brown);
+    font-weight: 300;
+    margin-bottom: 1.2rem;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 3rem 6rem;
+    border-top: 1px solid var(--warm);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-logo {
+    font-family: 'Fraunces', serif;
+    font-size: 1.2rem;
+    font-weight: 200;
+    color: var(--brown);
+  }
+
+  .footer-copy {
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  /* Divider lines */
+  .section-line {
+    width: 3rem;
+    height: 1px;
+    background: var(--tan);
+    margin-bottom: 2rem;
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  .animate-up {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .animate-up.visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; min-height: auto; padding-top: 6rem; }
+    .hero-text { padding: 3rem 2.5rem; order: 2; }
+    .hero-visual { order: 1; padding-top: 4rem; }
+    .vinyl-wrap { width: 220px; height: 220px; }
+    .section, .listen-section, footer { padding: 4rem 2.5rem; }
+    .about-section { grid-template-columns: 1fr; padding: 4rem 2.5rem; gap: 2rem; }
+    .about-decor { display: none; }
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { gap: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-logo">Songs Guy</span>
+  <ul class="nav-links">
+    <li><a href="#music">Music</a></li>
+    <li><a href="#listen">Listen</a></li>
+    <li><a href="#about">About</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-text">
+    <span class="hero-tag">Independent Artist · Instrumental</span>
+    <h1 class="hero-name">Songs<br /><em>Guy</em></h1>
+    <p class="hero-sub">Lo-Fi · Atmospheric · Instrumental</p>
+    <p class="hero-desc">
+      Quiet music for busy minds. Drifting lo-fi soundscapes and instrumental pieces designed to slow the world down, one track at a time.
+    </p>
+    <div class="cta-group">
+      <a class="btn btn-primary" href="#listen">▶ Stream Now</a>
+      <a class="btn btn-ghost" href="#music">View Discography</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="vinyl-wrap" title="Hover to pause">
+      <svg class="vinyl" viewBox="0 0 340 340" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="vinylGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#3a2a1a"/>
+            <stop offset="40%" stop-color="#1a1208"/>
+            <stop offset="100%" stop-color="#0e0a04"/>
+          </radialGradient>
+          <radialGradient id="labelGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#e8dcc8"/>
+            <stop offset="100%" stop-color="#c9b89a"/>
+          </radialGradient>
+        </defs>
+        <!-- Outer edge -->
+        <circle cx="170" cy="170" r="168" fill="#0e0a04" stroke="#2a1e10" stroke-width="1"/>
+        <!-- Grooves -->
+        <circle cx="170" cy="170" r="162" fill="none" stroke="#1e1408" stroke-width="1.5"/>
+        <circle cx="170" cy="170" r="155" fill="none" stroke="#1e1408" stroke-width="0.8"/>
+        <circle cx="170" cy="170" r="148" fill="none" stroke="#221806" stroke-width="1.2"/>
+        <circle cx="170" cy="170" r="141" fill="none" stroke="#1e1408" stroke-width="0.8"/>
+        <circle cx="170" cy="170" r="133" fill="none" stroke="#221806" stroke-width="1.0"/>
+        <circle cx="170" cy="170" r="126" fill="none" stroke="#1e1408" stroke-width="0.7"/>
+        <circle cx="170" cy="170" r="119" fill="none" stroke="#221806" stroke-width="1.0"/>
+        <circle cx="170" cy="170" r="112" fill="none" stroke="#1e1408" stroke-width="0.7"/>
+        <circle cx="170" cy="170" r="105" fill="none" stroke="#221806" stroke-width="0.9"/>
+        <circle cx="170" cy="170" r="97" fill="none" stroke="#1e1408" stroke-width="0.6"/>
+        <!-- Shine arc -->
+        <path d="M 60 120 Q 100 60 180 50" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="3" stroke-linecap="round"/>
+        <!-- Label -->
+        <circle cx="170" cy="170" r="56" fill="url(#labelGrad)"/>
+        <circle cx="170" cy="170" r="52" fill="none" stroke="#c9b89a" stroke-width="0.5"/>
+        <!-- Center hole -->
+        <circle cx="170" cy="170" r="6" fill="#0e0a04"/>
+        <!-- Label text -->
+        <text x="170" y="155" text-anchor="middle" font-family="Georgia, serif" font-size="9" fill="#7a6550" letter-spacing="3" font-style="italic">SONGS</text>
+        <text x="170" y="170" text-anchor="middle" font-family="Georgia, serif" font-size="16" fill="#2a2018" letter-spacing="2" font-weight="normal">GUY</text>
+        <text x="170" y="186" text-anchor="middle" font-family="Georgia, serif" font-size="7" fill="#9a8c7a" letter-spacing="2">INSTRUMENTAL</text>
+        <!-- Label detail lines -->
+        <line x1="145" y1="193" x2="195" y2="193" stroke="#c4703a" stroke-width="0.5"/>
+      </svg>
+    </div>
+    <span class="pause-hint">hover to pause</span>
+  </div>
+</section>
+
+<!-- MUSIC / TOP SONGS -->
+<section class="section" id="music">
+  <div class="animate-up">
+    <p class="section-label">Discography</p>
+    <h2 class="section-title">Top <em>Tracks</em></h2>
+  </div>
+  <div class="songs-list animate-up">
+
+    <div class="song-item" data-src="https://archive.org/download/hold-me-down_202605/Hold_me_down.mp3">
+      <button class="play-btn" aria-label="Play Hold Me Down">▶</button>
+      <div class="song-info">
+        <span class="song-title">Hold Me Down</span>
+        <span class="song-meta">Single · 2026</span>
+      </div>
+      <div class="song-progress-wrap"><div class="song-progress-bar"><div class="song-progress-fill"></div></div><span class="song-time">0:00</span></div>
+      <span class="song-num">01</span>
+    </div>
+
+    <div class="song-item" data-src="https://archive.org/download/grace-in-the-quiet/Grace_in_the_Quiet.mp3">
+      <button class="play-btn" aria-label="Play Grace in the Quiet">▶</button>
+      <div class="song-info">
+        <span class="song-title">Grace in the Quiet</span>
+        <span class="song-meta">Single · 2026</span>
+      </div>
+      <div class="song-progress-wrap"><div class="song-progress-bar"><div class="song-progress-fill"></div></div><span class="song-time">0:00</span></div>
+      <span class="song-num">02</span>
+    </div>
+
+    <div class="song-item" data-src="https://archive.org/download/armour-up/Armour_up.mp3">
+      <button class="play-btn" aria-label="Play Armor Up">▶</button>
+      <div class="song-info">
+        <span class="song-title">Armor Up</span>
+        <span class="song-meta">Single · 2026</span>
+      </div>
+      <div class="song-progress-wrap"><div class="song-progress-bar"><div class="song-progress-fill"></div></div><span class="song-time">0:00</span></div>
+      <span class="song-num">03</span>
+    </div>
+
+    <div class="song-item" data-src="https://archive.org/download/built-different/Built_Different.mp3">
+      <button class="play-btn" aria-label="Play Built Different">▶</button>
+      <div class="song-info">
+        <span class="song-title">Built Different</span>
+        <span class="song-meta">Single · 2026</span>
+      </div>
+      <div class="song-progress-wrap"><div class="song-progress-bar"><div class="song-progress-fill"></div></div><span class="song-time">0:00</span></div>
+      <span class="song-num">04</span>
+    </div>
+
+    <div class="song-item" data-src="https://archive.org/download/cornerstone-flow/Cornerstone_Flow.mp3">
+      <button class="play-btn" aria-label="Play Cornerstone Flow">▶</button>
+      <div class="song-info">
+        <span class="song-title">Cornerstone Flow</span>
+        <span class="song-meta">Single · 2026</span>
+      </div>
+      <div class="song-progress-wrap"><div class="song-progress-bar"><div class="song-progress-fill"></div></div><span class="song-time">0:00</span></div>
+      <span class="song-num">05</span>
+    </div>
+
+    <div class="song-item" data-src="https://songs-guy.github.io/audio/cloudy-terminal.mp3">
+      <button class="play-btn" aria-label="Play Cloudy Terminal">▶</button>
+      <div class="song-info">
+        <span class="song-title">Cloudy Terminal</span>
+        <span class="song-meta">Lo-Fi Tracks · 2026</span>
+      </div>
+      <div class="song-progress-wrap"><div class="song-progress-bar"><div class="song-progress-fill"></div></div><span class="song-time">0:00</span></div>
+      <span class="song-num">06</span>
+    </div>
+
+    <div class="song-item" data-src="https://songs-guy.github.io/audio/soft-focus.mp3">
+      <button class="play-btn" aria-label="Play Soft Focus">▶</button>
+      <div class="song-info">
+        <span class="song-title">Soft Focus</span>
+        <span class="song-meta">Lo-Fi Tracks · 2026</span>
+      </div>
+      <div class="song-progress-wrap"><div class="song-progress-bar"><div class="song-progress-fill"></div></div><span class="song-time">0:00</span></div>
+      <span class="song-num">07</span>
+    </div>
+
+    <div class="song-item" data-src="https://songs-guy.github.io/audio/lo-fi-daydream.mp3">
+      <button class="play-btn" aria-label="Play Lo-Fi Daydream">▶</button>
+      <div class="song-info">
+        <span class="song-title">Lo-Fi Daydream</span>
+        <span class="song-meta">Lo-Fi Tracks · 2026</span>
+      </div>
+      <div class="song-progress-wrap"><div class="song-progress-bar"><div class="song-progress-fill"></div></div><span class="song-time">0:00</span></div>
+      <span class="song-num">08</span>
+    </div>
+
+    <div class="song-item" data-src="https://songs-guy.github.io/audio/quiet-echoes.mp3">
+      <button class="play-btn" aria-label="Play Quiet Echoes">▶</button>
+      <div class="song-info">
+        <span class="song-title">Quiet Echoes</span>
+        <span class="song-meta">Lo-Fi Tracks · 2026</span>
+      </div>
+      <div class="song-progress-wrap"><div class="song-progress-bar"><div class="song-progress-fill"></div></div><span class="song-time">0:00</span></div>
+      <span class="song-num">09</span>
+    </div>
+
+    <div class="song-item" data-src="https://songs-guy.github.io/audio/coffee-break.mp3">
+      <button class="play-btn" aria-label="Play Coffee Break">▶</button>
+      <div class="song-info">
+        <span class="song-title">Coffee Break</span>
+        <span class="song-meta">Lo-Fi Tracks · 2026</span>
+      </div>
+      <div class="song-progress-wrap"><div class="song-progress-bar"><div class="song-progress-fill"></div></div><span class="song-time">0:00</span></div>
+      <span class="song-num">10</span>
+    </div>
+
+    <div class="song-item" data-src="https://songs-guy.github.io/audio/window-light.mp3">
+      <button class="play-btn" aria-label="Play Window Light">▶</button>
+      <div class="song-info">
+        <span class="song-title">Window Light</span>
+        <span class="song-meta">Lo-Fi Tracks · 2026</span>
+      </div>
+      <div class="song-progress-wrap"><div class="song-progress-bar"><div class="song-progress-fill"></div></div><span class="song-time">0:00</span></div>
+      <span class="song-num">11</span>
+    </div>
+
+    <div class="song-item" data-src="https://songs-guy.github.io/audio/midnight-window.mp3">
+      <button class="play-btn" aria-label="Play Midnight Window">▶</button>
+      <div class="song-info">
+        <span class="song-title">Midnight Window</span>
+        <span class="song-meta">Lo-Fi Tracks · 2026</span>
+      </div>
+      <div class="song-progress-wrap"><div class="song-progress-bar"><div class="song-progress-fill"></div></div><span class="song-time">0:00</span></div>
+      <span class="song-num">12</span>
+    </div>
+
+    <div class="song-item" data-src="https://songs-guy.github.io/audio/after-class.mp3">
+      <button class="play-btn" aria-label="Play After Class">▶</button>
+      <div class="song-info">
+        <span class="song-title">After Class</span>
+        <span class="song-meta">Lo-Fi Tracks · 2026</span>
+      </div>
+      <div class="song-progress-wrap"><div class="song-progress-bar"><div class="song-progress-fill"></div></div><span class="song-time">0:00</span></div>
+      <span class="song-num">13</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- STREAM -->
+<section class="listen-section" id="listen">
+  <div class="animate-up">
+    <p class="section-label">Stream</p>
+    <h2 class="section-title">Listen on Your<br /><em>Platform</em></h2>
+  </div>
+  <div class="platforms animate-up">
+    <div class="platform-card yt-card">
+      <div class="platform-icon yt">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+        </svg>
+      </div>
+      <div class="platform-info">
+        <p class="platform-name">YouTube</p>
+        <p class="platform-sub">Subscribe to the channel</p>
+      </div>
+      <div class="yt-btn-wrap">
+        <script src="https://apis.google.com/js/platform.js"></script>
+        <div class="g-ytsubscribe" data-channelid="UCK0mqMiLiEp7mx4gcMPKrLQ" data-layout="full" data-count="hidden"></div>
+      </div>
+    </div>
+    <a class="platform-card" href="https://music.apple.com/us/artist/songs-guy/1692598976" target="_blank" rel="noopener">
+      <div class="platform-icon apple">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.54 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/>
+        </svg>
+      </div>
+      <div class="platform-info">
+        <p class="platform-name">Apple Music</p>
+        <p class="platform-sub">Stream now</p>
+      </div>
+      <span class="platform-arrow">→</span>
+    </a>
+    <a class="platform-card" href="https://open.spotify.com/artist/6oKZqkGHLaZMkbXeZmTr1S" target="_blank" rel="noopener">
+      <div class="platform-icon spotify">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+        </svg>
+      </div>
+      <div class="platform-info">
+        <p class="platform-name">Spotify</p>
+        <p class="platform-sub">Stream now</p>
+      </div>
+      <span class="platform-arrow">→</span>
+    </a>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about-section" id="about">
+  <div class="about-decor animate-up">
+    <div class="about-circle">
+      <div class="about-circle-inner">Lo<br />Fi</div>
+    </div>
+  </div>
+  <div class="animate-up">
+    <p class="section-label">About</p>
+    <h2 class="section-title">The <em>Artist</em></h2>
+    <div class="section-line"></div>
+    <div class="about-text">
+      <p>Songs Guy is an independent instrumental artist crafting lo-fi soundscapes and ambient music for listeners who need a moment to breathe. Each track is an invitation to slow down.</p>
+      <p>With releases spanning cozy lo-fi collections to introspective singles, the music finds its home in study sessions, late evenings, and quiet mornings — wherever focus and calm are needed most.</p>
+      <p>Available on all major streaming platforms. New music released regularly.</p>
+    </div>
+    <div class="cta-group" style="margin-top:2rem;">
+      <a class="btn btn-primary" href="https://music.apple.com/us/artist/songs-guy/1692598976" target="_blank" rel="noopener">Listen on Apple Music</a>
+      <a class="btn btn-ghost" href="https://open.spotify.com/artist/6oKZqkGHLaZMkbXeZmTr1S" target="_blank" rel="noopener">Open Spotify</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-logo">Songs Guy</span>
+  <span class="footer-copy">© 2026 Songs Guy · All rights reserved</span>
+</footer>
+
+<script>
+  // Scroll animations
+  const els = document.querySelectorAll('.animate-up');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 100);
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  els.forEach(el => obs.observe(el));
+
+  // Audio player
+  let currentAudio = null;
+  let currentItem = null;
+
+  function fmtTime(s) {
+    if (isNaN(s)) return '0:00';
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60).toString().padStart(2, '0');
+    return `${m}:${sec}`;
+  }
+
+  function stopCurrent() {
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+    }
+    if (currentItem) {
+      currentItem.classList.remove('playing');
+      currentItem.querySelector('.play-btn').textContent = '▶';
+      currentItem.querySelector('.song-progress-fill').style.width = '0%';
+      currentItem.querySelector('.song-time').textContent = '0:00';
+    }
+    currentAudio = null;
+    currentItem = null;
+  }
+
+  document.querySelectorAll('.song-item').forEach(item => {
+    const src = item.dataset.src;
+    const btn = item.querySelector('.play-btn');
+    const fill = item.querySelector('.song-progress-fill');
+    const timeEl = item.querySelector('.song-time');
+    const bar = item.querySelector('.song-progress-bar');
+
+    btn.addEventListener('click', () => {
+      if (currentItem === item) {
+        if (currentAudio.paused) {
+          currentAudio.play();
+          btn.textContent = '⏸';
+          item.classList.add('playing');
+        } else {
+          currentAudio.pause();
+          btn.textContent = '▶';
+          item.classList.remove('playing');
+        }
+        return;
+      }
+      stopCurrent();
+      const audio = new Audio(src);
+      currentAudio = audio;
+      currentItem = item;
+      item.classList.add('playing');
+      btn.textContent = '⏸';
+      audio.play();
+      audio.addEventListener('timeupdate', () => {
+        if (audio.duration) {
+          fill.style.width = (audio.currentTime / audio.duration * 100) + '%';
+          timeEl.textContent = fmtTime(audio.currentTime);
+        }
+      });
+      audio.addEventListener('ended', () => {
+        item.classList.remove('playing');
+        btn.textContent = '▶';
+        fill.style.width = '0%';
+        timeEl.textContent = '0:00';
+        currentAudio = null;
+        currentItem = null;
+      });
+    });
+
+    if (bar) {
+      bar.addEventListener('click', e => {
+        if (currentItem === item && currentAudio && currentAudio.duration) {
+          const rect = bar.getBoundingClientRect();
+          const pct = (e.clientX - rect.left) / rect.width;
+          currentAudio.currentTime = pct * currentAudio.duration;
+        }
+      });
+    }
+  });
+</script>
+</body>
+</html>
